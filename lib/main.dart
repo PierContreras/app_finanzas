@@ -36,73 +36,11 @@ import 'package:finanzas_app1/presentation/pages/settings/settings_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     final sharedPreferences = await SharedPreferences.getInstance();
-    final localDataSource = LocalDataSource(sharedPreferences: sharedPreferences);
-    
-    // Repositorios
-    final AuthRepository authRepository = AuthRepositoryImpl(localDataSource: localDataSource);
-    final ExpenseRepository expenseRepository = ExpenseRepositoryImpl(localDataSource: localDataSource);
-    final CategoryRepository categoryRepository = CategoryRepositoryImpl(localDataSource: localDataSource);
 
-    // Auth Use Cases
-    final SignInUseCase signInUseCase = SignInUseCase(authRepository);
-    final SignUpUseCase signUpUseCase = SignUpUseCase(authRepository);
-    final SignOutUseCase signOutUseCase = SignOutUseCase(authRepository);
-    final GetCurrentUserUseCase getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
-    
-    // Expense Use Cases
-    final GetExpensesUseCase getExpensesUseCase = GetExpensesUseCase(expenseRepository);
-    final AddExpenseUseCase addExpenseUseCase = AddExpenseUseCase(expenseRepository);
-    final DeleteExpenseUseCase deleteExpenseUseCase = DeleteExpenseUseCase(expenseRepository);
-    final GetMonthlyExpensesUseCase getMonthlyExpensesUseCase = GetMonthlyExpensesUseCase(expenseRepository);
-    final GetTotalMonthlyExpensesUseCase getTotalMonthlyExpensesUseCase = GetTotalMonthlyExpensesUseCase(expenseRepository);
-
-    // Category Use Cases
-    final GetCategoriesUseCase getCategoriesUseCase = GetCategoriesUseCase(categoryRepository);
-    final AddCategoryUseCase addCategoryUseCase = AddCategoryUseCase(categoryRepository);
-    final GetCategoryByIdUseCase getCategoryByIdUseCase = GetCategoryByIdUseCase(categoryRepository);
-    final UpdateCategoryUseCase updateCategoryUseCase = UpdateCategoryUseCase(categoryRepository);
-    final DeleteCategoryUseCase deleteCategoryUseCase = DeleteCategoryUseCase(categoryRepository);
-    final CategoryExistsUseCase categoryExistsUseCase = CategoryExistsUseCase(categoryRepository);
-
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => ThemeProvider()),
-          ChangeNotifierProvider(create: (_) => BudgetProvider(sharedPreferences)),
-          ChangeNotifierProvider(
-            create: (_) => AuthProvider(
-              signInUseCase: signInUseCase,
-              signUpUseCase: signUpUseCase,
-              signOutUseCase: signOutUseCase,
-              getCurrentUserUseCase: getCurrentUserUseCase,
-            ),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ExpenseProvider(
-              getExpensesUseCase: getExpensesUseCase,
-              addExpenseUseCase: addExpenseUseCase,
-              deleteExpenseUseCase: deleteExpenseUseCase,
-              getMonthlyExpensesUseCase: getMonthlyExpensesUseCase,
-              getTotalMonthlyExpensesUseCase: getTotalMonthlyExpensesUseCase,
-            ),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => CategoryProvider(
-              getCategoriesUseCase: getCategoriesUseCase,
-              addCategoryUseCase: addCategoryUseCase,
-              getCategoryByIdUseCase: getCategoryByIdUseCase,
-              updateCategoryUseCase: updateCategoryUseCase,
-              deleteCategoryUseCase: deleteCategoryUseCase,
-              categoryExistsUseCase: categoryExistsUseCase,
-            ),
-          ),
-        ],
-        child: const MyApp(),
-      ),
-    );
+    runApp(buildApp(sharedPreferences));
   } catch (error) {
     runApp(
       const MaterialApp(
@@ -114,6 +52,71 @@ void main() async {
       ),
     );
   }
+}
+
+Widget buildApp(SharedPreferences sharedPreferences) {
+  final localDataSource = LocalDataSource(sharedPreferences: sharedPreferences);
+
+  // Repositorios
+  final AuthRepository authRepository = AuthRepositoryImpl(localDataSource: localDataSource);
+  final ExpenseRepository expenseRepository = ExpenseRepositoryImpl(localDataSource: localDataSource);
+  final CategoryRepository categoryRepository = CategoryRepositoryImpl(localDataSource: localDataSource);
+
+  // Auth Use Cases
+  final SignInUseCase signInUseCase = SignInUseCase(authRepository);
+  final SignUpUseCase signUpUseCase = SignUpUseCase(authRepository);
+  final SignOutUseCase signOutUseCase = SignOutUseCase(authRepository);
+  final GetCurrentUserUseCase getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
+
+  // Expense Use Cases
+  final GetExpensesUseCase getExpensesUseCase = GetExpensesUseCase(expenseRepository);
+  final AddExpenseUseCase addExpenseUseCase = AddExpenseUseCase(expenseRepository);
+  final DeleteExpenseUseCase deleteExpenseUseCase = DeleteExpenseUseCase(expenseRepository);
+  final GetMonthlyExpensesUseCase getMonthlyExpensesUseCase = GetMonthlyExpensesUseCase(expenseRepository);
+  final GetTotalMonthlyExpensesUseCase getTotalMonthlyExpensesUseCase = GetTotalMonthlyExpensesUseCase(expenseRepository);
+
+  // Category Use Cases
+  final GetCategoriesUseCase getCategoriesUseCase = GetCategoriesUseCase(categoryRepository);
+  final AddCategoryUseCase addCategoryUseCase = AddCategoryUseCase(categoryRepository);
+  final GetCategoryByIdUseCase getCategoryByIdUseCase = GetCategoryByIdUseCase(categoryRepository);
+  final UpdateCategoryUseCase updateCategoryUseCase = UpdateCategoryUseCase(categoryRepository);
+  final DeleteCategoryUseCase deleteCategoryUseCase = DeleteCategoryUseCase(categoryRepository);
+  final CategoryExistsUseCase categoryExistsUseCase = CategoryExistsUseCase(categoryRepository);
+
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ChangeNotifierProvider(create: (_) => BudgetProvider(sharedPreferences)),
+      ChangeNotifierProvider(
+        create: (_) => AuthProvider(
+          signInUseCase: signInUseCase,
+          signUpUseCase: signUpUseCase,
+          signOutUseCase: signOutUseCase,
+          getCurrentUserUseCase: getCurrentUserUseCase,
+        ),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => ExpenseProvider(
+          getExpensesUseCase: getExpensesUseCase,
+          addExpenseUseCase: addExpenseUseCase,
+          deleteExpenseUseCase: deleteExpenseUseCase,
+          getMonthlyExpensesUseCase: getMonthlyExpensesUseCase,
+          getTotalMonthlyExpensesUseCase: getTotalMonthlyExpensesUseCase,
+        ),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => CategoryProvider(
+          getCategoriesUseCase: getCategoriesUseCase,
+          addCategoryUseCase: addCategoryUseCase,
+          getCategoryByIdUseCase: getCategoryByIdUseCase,
+          updateCategoryUseCase: updateCategoryUseCase,
+          deleteCategoryUseCase: deleteCategoryUseCase,
+          categoryExistsUseCase: categoryExistsUseCase,
+        ),
+      ),
+    ],
+    child: const MyApp(),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -161,22 +164,13 @@ class _AppWrapperState extends State<AppWrapper> {
 
   Future<void> _initializeApp() async {
     try {
-      // Obtener providers sin usar context para evitar problemas async
-      final sharedPreferences = await SharedPreferences.getInstance();
-      
-      // Inicializar AuthProvider
-      final authProvider = AuthProvider(
-        signInUseCase: SignInUseCase(AuthRepositoryImpl(localDataSource: LocalDataSource(sharedPreferences: sharedPreferences))),
-        signUpUseCase: SignUpUseCase(AuthRepositoryImpl(localDataSource: LocalDataSource(sharedPreferences: sharedPreferences))),
-        signOutUseCase: SignOutUseCase(AuthRepositoryImpl(localDataSource: LocalDataSource(sharedPreferences: sharedPreferences))),
-        getCurrentUserUseCase: GetCurrentUserUseCase(AuthRepositoryImpl(localDataSource: LocalDataSource(sharedPreferences: sharedPreferences))),
-      );
-      
+      final authProvider = context.read<AuthProvider>();
+
       await authProvider.initialize();
-      
+
       // Pequeña delay para mejor UX
       await Future.delayed(const Duration(milliseconds: 800));
-      
+
     } catch (error) {
       _initializationError = error.toString();
       debugPrint('Error en inicialización: $error');
